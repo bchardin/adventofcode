@@ -1,2 +1,7 @@
-.ipynb_checkpoints
+# Python
+__pycache__/
+.ipynb_checkpoints/
+
+# AOC
 *_sample.txt
+aocd_token
