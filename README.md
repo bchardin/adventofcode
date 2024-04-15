@@ -1,1 +1,1 @@
-My attempts for [Advent of Code](https://adventofcode.com) puzzles.
+My attempts at solving [Advent of Code](https://adventofcode.com) puzzles.
