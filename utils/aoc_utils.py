@@ -1,5 +1,6 @@
 """Helper functions for AOC."""
 import os
+import pathlib
 
 
 def load_data(year, day, token_file="../aocd_token"):
@@ -40,6 +41,7 @@ def load_data(year, day, token_file="../aocd_token"):
                 "'pip install advent-of-code-data', or download data "
                 "files manually"
             ) from e
+        pathlib.Path(filename).parent.mkdir(exist_ok=True, parents=True)
         with open(token_file, "r", encoding="utf-8") as f:
             aocd_session = f.read().strip()
         data = get_data(session=aocd_session, day=day, year=year)
