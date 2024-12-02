@@ -5,3 +5,4 @@ __pycache__/
 # AOC
 *_sample.txt
 aocd_token
+inputs/
