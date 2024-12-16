@@ -1,6 +1,7 @@
 """Helper functions for AOC."""
 import os
 import pathlib
+import warnings
 
 
 def load_data(year, day, token_file="../aocd_token"):
@@ -39,7 +40,7 @@ def load_data(year, day, token_file="../aocd_token"):
                 "Please install the AOC API Python wrapper "
                 "(https://github.com/wimglenn/advent-of-code-data): "
                 "'pip install advent-of-code-data', or download data "
-                "files manually"
+                "files manually",
             ) from e
         pathlib.Path(filename).parent.mkdir(exist_ok=True, parents=True)
         with open(token_file, "r", encoding="utf-8") as f:
@@ -50,7 +51,7 @@ def load_data(year, day, token_file="../aocd_token"):
         return data
 
 
-def check(function, tests, part=1, verbose=False, **kwargs):
+def check(function, tests, part=1, *, verbose=False, skip=False, **kwargs):
     """Check outputs for a given function and test cases.
 
     Test cases are usually sequences of: input, part 1 output, part 2 output
@@ -67,15 +68,35 @@ def check(function, tests, part=1, verbose=False, **kwargs):
         Output selector for test cases (starts at 1).
     verbose : bool (default False)
         Display inputs and outputs.
+    skip : bool (default False)
+        Skip failed tests.
     **kwargs
         Additional keyword arguments to provide to the function.
     """
-    for input_, *outputs in tests:
+    for i, (input_, *outputs) in enumerate(tests):
         output = outputs[part - 1]
         if output is not None:
-            result = function(input_, **kwargs)
-            if verbose:
-                print("Input:")
-                print(input_)
-                print(f"Result: {result} (expected: {output})")
-            assert result == output, f"{result} == {output}"
+            try:
+                if verbose:
+                    print(f"[Test {i}] Input:")
+                    print(input_)
+                result = function(input_, **kwargs)
+                if verbose:
+                    print(f"[Test {i}] Result: {result} (expected: {output})")
+                if result != output:
+                    if skip:
+                        warnings.warn(
+                            f"Test {i} failed with result {result} ({output} expected).",
+                            stacklevel=2,
+                        )
+                    else:
+                        raise AssertionError(f"{result} == {output}")
+            except Exception as e:
+                if skip:
+                    warnings.warn(
+                        f"Test {i} failed with {e.__class__.__name__}: "
+                        f"{e} ({output} expected).",
+                        stacklevel=2,
+                    )
+                else:
+                    raise e from None
